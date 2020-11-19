@@ -7,6 +7,8 @@ const pool = new Pool({
   port: 1000,
 })
 
+//---------------------ITEMS---------------------
+
 const getItems = (request, response) => {
   let item_name = request.query.item_name
   if(item_name){
@@ -25,6 +27,16 @@ const getItems = (request, response) => {
       response.status(200).json(results.rows)
     })
   }
+}
+
+const getItemByItemId = (request, response) => {
+  const id = parseInt(request.params.itemId)
+  pool.query('SELECT * FROM tbl_items WHERE item_id = $1', [id], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
 }
 
 const postItem = (req, res) => {
@@ -54,19 +66,11 @@ const postItem = (req, res) => {
   res.json(result);
 }
 
+
+//---------------------PANTRY---------------------
+
 const getPantryList = (request, response) => {
   pool.query('SELECT * FROM tbl_pantrylist', (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
-
-const getItemByItemId = (request, response) => {
-  const id = parseInt(request.params.itemId)
-
-  pool.query('SELECT * FROM tbl_items WHERE item_id = $1', [id], (error, results) => {
     if (error) {
       throw error
     }
@@ -77,72 +81,29 @@ const getItemByItemId = (request, response) => {
 const postToPantryList = (request, response) => {
   let result;
   const { item_id } = request.body
-  pool.query(
-    'INSERT INTO tbl_pantrylist (item_id) VALUES ($1)',
-    [item_id],
-    (error, results) => {
-      if (error) {
-        throw error
-        result = {
-          "status": "failed",
-          "message": "The message was not sent"
+  if (item_id) {
+    pool.query(
+      'INSERT INTO tbl_pantrylist (item_id) VALUES ($1)',
+      [item_id],
+      (error, results) => {
+          if (error) {
+              throw error;
           }
-        response.status(400);
       }
+    );
+    result = {
+        status: "success",
+        message: "The message was successfully sent",
+    };
+  } else {
       result = {
-        "status": "success",
-        "message": "The message was successfully sent"
-        }
-      response.status(200);
-    }
-  )
+          status: "failed",
+          message: "The message was not sent",
+      };
+      response.status(400);
+  }
   response.json(result);
 }
-
-
-
-
-/*
-const getStudentByStudentId = (request, response) => {
-  const id = parseInt(request.params.studentId)
-
-  pool.query('SELECT * FROM students WHERE studentId = $1', [id], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
-
-
-const registerStudent = (request, response) => {
-  const { name } = request.body
-
-  pool.query('INSERT INTO students (name) VALUES ($1)', [name], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(201)
-  })
-}
-
-
-const addGrade = (request, response) => {
-  const id = parseInt(request.params.studentId)
-  const { className, grade } = request.body
-
-  pool.query(
-    'UPDATE students SET history = $1 WHERE studentId = $2',
-    [grade, id],
-    (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(200).send(`User modified with ID: ${id}`)
-    }
-  )
-}
-*/
 
 module.exports = {
                   getItems,
@@ -150,8 +111,4 @@ module.exports = {
                   getPantryList,
                   getItemByItemId,
                   postToPantryList,
-                  /*
-                  getStudentByStudentId,
-                  registerStudent,
-                  addGrade,*/
                  }

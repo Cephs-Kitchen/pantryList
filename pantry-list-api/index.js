@@ -15,18 +15,11 @@ app.get('/items', db.getItems)
 
 app.get('/items/:itemId', db.getItemByItemId)
 
+app.post('/item', db.postItem)
+
 app.get('/pantryList', db.getPantryList)
 
 app.post('/pantryList', db.postToPantryList)
-
-app.post('/item', db.postItem)
-/*
-app.get('/students/:studentId', db.getStudentByStudentId)
-
-app.post('/register', db.registerStudent)
-
-app.post('/grade/:studentId', db.addGrade)
-*/
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)

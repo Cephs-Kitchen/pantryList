@@ -1,41 +1,44 @@
 import './App.css';
 import React from 'react';
 
+const apiPORT = 9000;
+
 class App extends React.Component {
   constructor(props){
     super(props)
     this.state = {
       inputItem: '',
       pantryList: [],
-      shoppingList: [],
       itemNamesList: [],
     }
   }
 
-  componentDidMount = () => {
-    fetch(`http://localhost:9000/items`, { method: 'GET' })
-      .then(response => response.json())
-      .then(data => {
-        this.setState({itemNamesList: data.map(item => item.item_name)})
-      })
-      .then(() => {
-        if(this.state.itemNamesList){
-          this.setState({inputItem: this.state.itemNamesList[0]})
+  componentDidMount = async () => {
+    //Show item history to the dropdown menu
+    const itemsResponse = await fetch(`http://localhost:${apiPORT}/items`, { method: 'GET' })
+    const itemsData = await itemsResponse.json()
+    this.setState(
+        {itemNamesList: itemsData.map(item => item.item_name)},
+        () => {
+          if(this.state.itemNamesList){
+            this.setState({inputItem: this.state.itemNamesList[0]})
+          } 
         } 
-      }) 
-    
-    fetch(`http://localhost:9000/pantryList`, { method: 'GET' })
+      )
+
+    //Show existing pantry list
+    const pantryResponse = await fetch(`http://localhost:${apiPORT}/pantryList`, { method: 'GET' })
+    const pantryData = await pantryResponse.json()
+    const itemIds = pantryData.map(pantryItem => pantryItem.item_id)
+    itemIds.forEach(item_id => {
+      fetch(`http://localhost:${apiPORT}/items/${item_id}`, { method: 'GET' })
       .then(response => response.json())
       .then(data => {
-        const itemIds = data.map(pantryItem => pantryItem.item_id)
-        itemIds.forEach(item_id => {
-          fetch(`http://localhost:9000/items/${item_id}`, { method: 'GET' })
-          .then(response => response.json())
-          .then(data => {
-            this.setState({pantryList: this.state.pantryList.concat(data[0].item_name)})
-          })
-        })
+        if(data[0]){
+          this.setState({pantryList: this.state.pantryList.concat(data[0].item_name)})
+        }
       })
+    })
   }
 
   handleChangeInput = (event) => {
@@ -46,8 +49,9 @@ class App extends React.Component {
     event.preventDefault()
     var item_name = this.state.inputItem
     item_name = item_name[0].toUpperCase() + item_name.substring(1)
+    //Add new item to the item history
     if(this.state.itemNamesList.indexOf(item_name) === -1){
-      await fetch(`http://localhost:9000/item`, {
+      await fetch(`http://localhost:${apiPORT}/item`, {
         method: 'POST',
         headers: { 'Content-Type':  'application/json' },
         body: JSON.stringify({
@@ -56,16 +60,17 @@ class App extends React.Component {
              })
         })
     }
-    fetch(`http://localhost:9000/items?item_name=${item_name}`, { method: 'GET' })
+    //Add item to the pantry list
+    fetch(`http://localhost:${apiPORT}/items?item_name=${item_name}`, { method: 'GET' })
       .then(response => response.json())
       .then(data => {
-        this.setState({pantryList: this.state.pantryList.concat(item_name)})
-        fetch(`http://localhost:9000/pantryList/`, {
+        fetch(`http://localhost:${apiPORT}/pantryList/`, {
             method: 'POST',
             headers: { 'Content-Type':  'application/json' },
             body: JSON.stringify({item_id: data[0].item_id})
           })
       })
+    this.setState({pantryList: this.state.pantryList.concat(item_name)})
   }
 
   handleRemoveItem = (event) => {
@@ -73,8 +78,7 @@ class App extends React.Component {
   }
 
   handleAddToShoppingList = (event) => {
-    this.handleRemoveItem(event)
-    this.setState({shoppingList: this.state.shoppingList.concat(event.target.value)})
+    alert(`TODO: add ${event.target.item} to shopping list & remove from pantryList`)
   }
 
   render() {
@@ -107,11 +111,6 @@ class App extends React.Component {
               </li>
             </div>
           )}
-        </ul>
-
-        <h3> Temp Shopping List </h3>
-        <ul>
-          {this.state.shoppingList.map(item =><li>{item}</li>)}
         </ul>
       </div>
     );
