@@ -10,6 +10,7 @@ const pool = new Pool({
 const getItems = (request, response) => {
   let item_name = request.query.item_name
   if(item_name){
+    item_name = item_name[0].toUpperCase() + item_name.substring(1)
     pool.query('SELECT * FROM tbl_items WHERE item_name = $1', [item_name], (error, results) => {
       if (error) {
         throw error
@@ -24,6 +25,33 @@ const getItems = (request, response) => {
       response.status(200).json(results.rows)
     })
   }
+}
+
+const postItem = (req, res) => {
+  let result;
+  const itemDetails = req.body;
+  if (itemDetails.name && itemDetails.categoryID) {
+    pool.query(
+      "INSERT INTO tbl_items (item_name, category_id) VALUES ($1, $2)",
+      [itemDetails.name, itemDetails.categoryID],
+      (db_err, db_res) => {
+          if (db_err) {
+              throw db_err;
+          }
+      }
+    );
+    result = {
+        status: "success",
+        message: "The message was successfully sent",
+    };
+  } else {
+      result = {
+          status: "failed",
+          message: "The message was not sent",
+      };
+      res.status(400);
+  }
+  res.json(result);
 }
 
 const getPantryList = (request, response) => {
@@ -47,6 +75,7 @@ const getItemByItemId = (request, response) => {
 }
 
 const postToPantryList = (request, response) => {
+  let result;
   const { item_id } = request.body
   pool.query(
     'INSERT INTO tbl_pantrylist (item_id) VALUES ($1)',
@@ -54,11 +83,24 @@ const postToPantryList = (request, response) => {
     (error, results) => {
       if (error) {
         throw error
+        result = {
+          "status": "failed",
+          "message": "The message was not sent"
+          }
+        response.status(400);
       }
-      response.status(200).send(`successful post to pantry list`)
+      result = {
+        "status": "success",
+        "message": "The message was successfully sent"
+        }
+      response.status(200);
     }
   )
+  response.json(result);
 }
+
+
+
 
 /*
 const getStudentByStudentId = (request, response) => {
@@ -104,6 +146,7 @@ const addGrade = (request, response) => {
 
 module.exports = {
                   getItems,
+                  postItem,
                   getPantryList,
                   getItemByItemId,
                   postToPantryList,

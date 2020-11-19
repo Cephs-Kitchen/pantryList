@@ -17,8 +17,9 @@ app.get('/items/:itemId', db.getItemByItemId)
 
 app.get('/pantryList', db.getPantryList)
 
-app.post('/postToPantryList', db.postToPantryList)
+app.post('/pantryList', db.postToPantryList)
 
+app.post('/item', db.postItem)
 /*
 app.get('/students/:studentId', db.getStudentByStudentId)
 

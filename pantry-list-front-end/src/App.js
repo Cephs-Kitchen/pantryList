@@ -6,49 +6,33 @@ class App extends React.Component {
     super(props)
     this.state = {
       inputItem: '',
-      pantryItemIdList: [],
       pantryList: [],
       shoppingList: [],
-      itemsList: [],
+      itemNamesList: [],
     }
   }
 
   componentDidMount = () => {
-    //TODO WITH PANTRYLIST DATABASE
-    
     fetch(`http://localhost:9000/items`, { method: 'GET' })
-      .then(response => {
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
-        this.setState({itemsList: data.map(item => item.item_name)})
+        this.setState({itemNamesList: data.map(item => item.item_name)})
       })
       .then(() => {
-        var newInputItem = ''
-        if(this.state.itemsList.length > 0){
-          newInputItem = this.state.itemsList[0]
-        } else {
-          newInputItem = ''
-        }
-        this.setState({inputItem: newInputItem})
+        if(this.state.itemNamesList){
+          this.setState({inputItem: this.state.itemNamesList[0]})
+        } 
       }) 
     
     fetch(`http://localhost:9000/pantryList`, { method: 'GET' })
-      .then(response => {
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
-        this.setState({pantryItemIdList: data.map(item => item.item_id)})
-      })
-      .then(() => {
-        this.state.pantryItemIdList.forEach(item_id => {
-          console.log(item_id)
+        const itemIds = data.map(pantryItem => pantryItem.item_id)
+        itemIds.forEach(item_id => {
           fetch(`http://localhost:9000/items/${item_id}`, { method: 'GET' })
-          .then(response => {
-            return response.json();
-          })
+          .then(response => response.json())
           .then(data => {
-            this.setState({pantryList: this.state.pantryList.concat(data.map(item=>item.item_name))})
+            this.setState({pantryList: this.state.pantryList.concat(data[0].item_name)})
           })
         })
       })
@@ -58,40 +42,30 @@ class App extends React.Component {
     this.setState({inputItem: event.target.value})
   }
 
-  handleAddItem = (event) => {
+  handleAddItem = async (event) => {
+    event.preventDefault()
     var item_name = this.state.inputItem
-    fetch(`http://localhost:9000/items?item_name=${item_name}`, { method: 'GET' })
-      .then(response => {
-        return response.json();
-      })
-      .then(data => {
-        alert(JSON.stringify(data[0]))
-
-
-      })
-
-
-/*
-    const response = await 
-    const existsInItems = response.json()
-
-    if(existsInItems){
-      //pull from items
-      alert(JSON.stringify(existsInItems))
-    } else {
-      fetch(`http://localhost:9000/pantryList/${item_name}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({item_name}),
-        })
-        .then(() => {
-          this.setState({pantryList: this.state.pantryList.concat(this.state.inputItem)})
+    item_name = item_name[0].toUpperCase() + item_name.substring(1)
+    if(this.state.itemNamesList.indexOf(item_name) === -1){
+      await fetch(`http://localhost:9000/item`, {
+        method: 'POST',
+        headers: { 'Content-Type':  'application/json' },
+        body: JSON.stringify({
+                name: item_name,
+                categoryID: 1, //TODO: FIX FOR CATEGORIES
+             })
         })
     }
-    */
-    event.preventDefault()
+    fetch(`http://localhost:9000/items?item_name=${item_name}`, { method: 'GET' })
+      .then(response => response.json())
+      .then(data => {
+        this.setState({pantryList: this.state.pantryList.concat(item_name)})
+        fetch(`http://localhost:9000/pantryList/`, {
+            method: 'POST',
+            headers: { 'Content-Type':  'application/json' },
+            body: JSON.stringify({item_id: data[0].item_id})
+          })
+      })
   }
 
   handleRemoveItem = (event) => {
@@ -115,7 +89,7 @@ class App extends React.Component {
           <label>
             Choose from item history:
             <select value={this.state.value} onChange={this.handleChangeInput.bind(this)}>
-              {this.state.itemsList.map(item => 
+              {this.state.itemNamesList.map(item => 
                 <option value={item}>{item}</option>
               )}
             </select>
