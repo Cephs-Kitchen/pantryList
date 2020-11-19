@@ -6,6 +6,7 @@ class App extends React.Component {
     super(props)
     this.state = {
       inputItem: '',
+      pantryItemIdList: [],
       pantryList: [],
       shoppingList: [],
       itemsList: [],
@@ -14,9 +15,8 @@ class App extends React.Component {
 
   componentDidMount = () => {
     //TODO WITH PANTRYLIST DATABASE
-    fetch(`http://localhost:9000/items`, {
-      method: 'GET',
-    })
+    
+    fetch(`http://localhost:9000/items`, { method: 'GET' })
       .then(response => {
         return response.json();
       })
@@ -32,6 +32,26 @@ class App extends React.Component {
         }
         this.setState({inputItem: newInputItem})
       }) 
+    
+    fetch(`http://localhost:9000/pantryList`, { method: 'GET' })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        this.setState({pantryItemIdList: data.map(item => item.item_id)})
+      })
+      .then(() => {
+        this.state.pantryItemIdList.forEach(item_id => {
+          console.log(item_id)
+          fetch(`http://localhost:9000/items/${item_id}`, { method: 'GET' })
+          .then(response => {
+            return response.json();
+          })
+          .then(data => {
+            this.setState({pantryList: this.state.pantryList.concat(data.map(item=>item.item_name))})
+          })
+        })
+      })
   }
 
   handleChangeInput = (event) => {
@@ -39,7 +59,38 @@ class App extends React.Component {
   }
 
   handleAddItem = (event) => {
-    this.setState({pantryList: this.state.pantryList.concat(this.state.inputItem)})
+    var item_name = this.state.inputItem
+    fetch(`http://localhost:9000/items?item_name=${item_name}`, { method: 'GET' })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        alert(JSON.stringify(data[0]))
+
+
+      })
+
+
+/*
+    const response = await 
+    const existsInItems = response.json()
+
+    if(existsInItems){
+      //pull from items
+      alert(JSON.stringify(existsInItems))
+    } else {
+      fetch(`http://localhost:9000/pantryList/${item_name}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({item_name}),
+        })
+        .then(() => {
+          this.setState({pantryList: this.state.pantryList.concat(this.state.inputItem)})
+        })
+    }
+    */
     event.preventDefault()
   }
 

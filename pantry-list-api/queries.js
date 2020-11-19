@@ -3,17 +3,61 @@ const pool = new Pool({
   user: 'ceph',
   host: 'localhost',
   database: 'cephs_citchen',
-  //password: 'password',
-  port: 61293,
+  password: 'ceph',
+  port: 1000,
 })
 
 const getItems = (request, response) => {
-  pool.query('SELECT * FROM tbl_items', (error, results) => {
+  let item_name = request.query.item_name
+  if(item_name){
+    pool.query('SELECT * FROM tbl_items WHERE item_name = $1', [item_name], (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).json(results.rows)
+    })
+  } else {
+    pool.query('SELECT * FROM tbl_items', (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).json(results.rows)
+    })
+  }
+}
+
+const getPantryList = (request, response) => {
+  pool.query('SELECT * FROM tbl_pantrylist', (error, results) => {
     if (error) {
       throw error
     }
     response.status(200).json(results.rows)
   })
+}
+
+const getItemByItemId = (request, response) => {
+  const id = parseInt(request.params.itemId)
+
+  pool.query('SELECT * FROM tbl_items WHERE item_id = $1', [id], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const postToPantryList = (request, response) => {
+  const { item_id } = request.body
+  pool.query(
+    'INSERT INTO tbl_pantrylist (item_id) VALUES ($1)',
+    [item_id],
+    (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).send(`successful post to pantry list`)
+    }
+  )
 }
 
 /*
@@ -60,6 +104,9 @@ const addGrade = (request, response) => {
 
 module.exports = {
                   getItems,
+                  getPantryList,
+                  getItemByItemId,
+                  postToPantryList,
                   /*
                   getStudentByStudentId,
                   registerStudent,

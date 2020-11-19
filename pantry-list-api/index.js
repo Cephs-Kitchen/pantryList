@@ -13,6 +13,12 @@ app.use(
 
 app.get('/items', db.getItems)
 
+app.get('/items/:itemId', db.getItemByItemId)
+
+app.get('/pantryList', db.getPantryList)
+
+app.post('/postToPantryList', db.postToPantryList)
+
 /*
 app.get('/students/:studentId', db.getStudentByStudentId)
 
