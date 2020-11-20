@@ -39,12 +39,13 @@ const getPantryList = (request, response) => {
       throw error
     }
     response.status(200).json(results.rows)
-  })
+  })  
 }
 
 const getItemByItemId = (request, response) => {
   const id = parseInt(request.params.itemId)
-  pool.query('SELECT * FROM tbl_pantrylist WHERE item_id = $1', [id], (error, results) => {
+  let str = 'SELECT pantry_item_id, tbl_items.item_id, expiration, amount, item_name, category_name FROM tbl_pantrylist INNER JOIN tbl_items ON tbl_pantrylist.item_id = tbl_items.item_id INNER JOIN tbl_item_categories ON tbl_items.category_id = tbl_item_categories.category_id' 
+  pool.query(str+' WHERE tbl_items.item_id = $1;', [id], (error, results) => {
     if (error) {
       throw error
     }
