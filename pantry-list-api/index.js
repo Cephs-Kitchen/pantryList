@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const categoryDB = require('./categoryQueries')
 const itemsDB = require('./itemsQueries')
 const pantryDB = require('./pantryQueries')
 const app = express()
@@ -12,6 +13,8 @@ app.use(
   })
 )
 
+app.get('/categories', categoryDB.getCategories)
+
 // GET items  ---- /items
 app.get('/items', itemsDB.getItems)
 
@@ -21,11 +24,11 @@ app.get('/items/:itemId', itemsDB.getItemByItemId)
 // POST item to items, requires body to have "name" and "categoryID"
 app.post('/item', itemsDB.postItem)
 
+// GET select pantry list ---- /selectPantryList?sortBy="expiration"
+app.get('/selectPantryList', pantryDB.getSelectPantryList)
+
 // GET pantry list  ---- /pantryList
 app.get('/pantryList', pantryDB.getPantryList)
-
-
-app.get('/selectPantryList', pantryDB.getSelectPantryList)
 
 // GET pantry list item by id  ---- /pantryList/:itemId
 app.get('/pantryList/:itemId', pantryDB.getItemByItemId)
