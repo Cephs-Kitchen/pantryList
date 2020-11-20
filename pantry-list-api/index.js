@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const db = require('./queries')
+const itemsDB = require('./itemsQueries')
+const pantryDB = require('./pantryQueries')
 const app = express()
 const port = 9000
 
@@ -11,15 +12,29 @@ app.use(
   })
 )
 
-app.get('/items', db.getItems)
+// GET items  ---- /items
+app.get('/items', itemsDB.getItems)
 
-app.get('/items/:itemId', db.getItemByItemId)
+// GET item by id  ---- /items/:itemId
+app.get('/items/:itemId', itemsDB.getItemByItemId)
 
-app.post('/item', db.postItem)
+// POST item to items, requires body to have "name" and "categoryID"
+app.post('/item', itemsDB.postItem)
 
-app.get('/pantryList', db.getPantryList)
+// GET pantry list  ---- /pantryList
+app.get('/pantryList', pantryDB.getPantryList)
 
-app.post('/pantryList', db.postToPantryList)
+
+app.get('/selectPantryList', pantryDB.getSelectPantryList)
+
+// GET pantry list item by id  ---- /pantryList/:itemId
+app.get('/pantryList/:itemId', pantryDB.getItemByItemId)
+
+// POST item to pantry list, requires body to have "item_id", "expiration", and "amount"
+app.post('/pantryList', pantryDB.postToPantryList)
+
+// DELETE pantry list item 
+app.delete('/pantryList/:pantryItemId', pantryDB.deletePantryItem)
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
