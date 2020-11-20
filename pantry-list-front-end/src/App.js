@@ -9,7 +9,8 @@ class App extends React.Component {
     this.state = {
       inputItem: '',
       pantryList: [],
-      itemNamesList: [],
+      itemsList: [],
+      item_id: null,
     }
   }
 
@@ -18,10 +19,10 @@ class App extends React.Component {
     const itemsResponse = await fetch(`http://localhost:${apiPORT}/items`, { method: 'GET' })
     const itemsData = await itemsResponse.json()
     this.setState(
-        {itemNamesList: itemsData.map(item => item.item_name)},
+        {itemsList: itemsData},
         () => {
-          if(this.state.itemNamesList){
-            this.setState({inputItem: this.state.itemNamesList[0]})
+          if(this.state.itemsList){
+            this.setState({inputItem: this.state.itemsList[0].item_name, item_id: this.state.itemsList[0].item_id})
           } 
         } 
       )
@@ -29,39 +30,66 @@ class App extends React.Component {
     //Show existing pantry list
     const pantryResponse = await fetch(`http://localhost:${apiPORT}/selectPantryList`, { method: 'GET' })
     const pantryData = await pantryResponse.json()
-    this.setState({pantryList: pantryData.map(item => [item.item_name, item.expiration, item.amount])})
+    this.setState({pantryList: pantryData})
   }
 
   handleChangeInput = (event) => {
     this.setState({inputItem: event.target.value})
   }
 
+  handleSelectChangeInput = (event) => {
+    const item = event.target.value.split(',')
+    this.setState({inputItem: item[0], item_id: item[1]})
+  }
+
   handleAddItem = async (event) => {
     event.preventDefault()
     var item_name = this.state.inputItem
     item_name = item_name[0].toUpperCase() + item_name.substring(1)
-    //Add new item to the item history
-    if(this.state.itemNamesList.indexOf(item_name) === -1){
-      await fetch(`http://localhost:${apiPORT}/item`, {
-        method: 'POST',
-        headers: { 'Content-Type':  'application/json' },
-        body: JSON.stringify({
-                name: item_name,
-                categoryID: 1, //TODO: FIX FOR CATEGORIES
-             })
-        })
-    }
-    //Add item to the pantry list
-    fetch(`http://localhost:${apiPORT}/items?item_name=${item_name}`, { method: 'GET' })
-      .then(response => response.json())
-      .then(data => {
-        fetch(`http://localhost:${apiPORT}/pantryList/`, {
-            method: 'POST',
-            headers: { 'Content-Type':  'application/json' },
-            body: JSON.stringify({item_id: data[0].item_id})
+    var promise = new Promise((resolve, reject) => {
+      //Add new item to the item history
+      const tempArr = this.state.itemsList.filter(item => item.item_name === item_name)
+      if(tempArr.length === 0){
+        fetch(`http://localhost:${apiPORT}/item`, {
+          method: 'POST',
+          headers: { 'Content-Type':  'application/json' },
+          body: JSON.stringify({
+                  name: item_name,
+                  categoryID: 1, //TODO: FIX FOR CATEGORIES
+               })
           })
-      })
-    this.setState({pantryList: this.state.pantryList.concat(item_name)})
+        .then(()=>{
+            fetch(`http://localhost:${apiPORT}/items?item_name=${item_name}`, {method: 'GET'})
+            .then(res => res.json())
+            .then(data => {
+              this.setState({itemsList: this.state.itemsList.concat(data[0])}, resolve(data[0].item_id))
+            })
+          }
+        )
+      } else {
+        resolve(tempArr[0].item_id);
+      }
+    })
+
+    promise
+      .then((item_id) =>
+        //Add item to the pantry list
+        fetch(`http://localhost:${apiPORT}/pantryList/`, {
+          method: 'POST',
+          headers: { 'Content-Type':  'application/json' },
+          body: JSON.stringify({
+                  item_id: item_id,
+                  expiration: '2020-01-01', //TODO: FIX INPUT
+                  amount: 1 //TODO: FIX INPUT
+                })
+          })    
+        .then(()=>{ //TODO: CANNOT DIFFERENTIATE BTWN PANTRY ITEMS WITH SAME ITEM NAME/ID. NEED TO GET PANTRY ITEM ID.
+          fetch(`http://localhost:${apiPORT}/pantryList/${item_id}`, {method: 'GET'})
+          .then(res => res.json())
+          .then(data => { this.setState({pantryList: this.state.pantryList.concat(data[0])})})
+        })
+      )
+
   }
 
   handleRemoveItem = (event) => {
@@ -83,9 +111,9 @@ class App extends React.Component {
         <form onSubmit={this.handleAddItem.bind(this)}>
           <label>
             Choose from item history:
-            <select value={this.state.value} onChange={this.handleChangeInput.bind(this)}>
-              {this.state.itemNamesList.map(item => 
-                <option value={item}>{item}</option>
+            <select onChange={this.handleSelectChangeInput.bind(this)}>
+              {this.state.itemsList.map(item => 
+                <option value={[item.item_name, item.item_id]} >{item.item_name}</option>
               )}
             </select>
           </label>
@@ -96,7 +124,7 @@ class App extends React.Component {
           {this.state.pantryList.map(item =>
             <div>
               <li>
-                {item[0]}   Expiration Date : {item[1].substring(0,10)}   Amount : {item[2]}
+                {item.item_name}   Expiration Date : {item.expiration}   Amount : {item.amount}
                 <button onClick={this.handleRemoveItem.bind(this)} value={item}>Remove</button>
                 <button onClick={this.handleAddToShoppingList.bind(this)} value={item}>Add to Shopping List</button>
               </li>
