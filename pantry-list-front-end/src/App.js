@@ -27,18 +27,9 @@ class App extends React.Component {
       )
 
     //Show existing pantry list
-    const pantryResponse = await fetch(`http://localhost:${apiPORT}/pantryList`, { method: 'GET' })
+    const pantryResponse = await fetch(`http://localhost:${apiPORT}/selectPantryList`, { method: 'GET' })
     const pantryData = await pantryResponse.json()
-    const itemIds = pantryData.map(pantryItem => pantryItem.item_id)
-    itemIds.forEach(item_id => {
-      fetch(`http://localhost:${apiPORT}/items/${item_id}`, { method: 'GET' })
-      .then(response => response.json())
-      .then(data => {
-        if(data[0]){
-          this.setState({pantryList: this.state.pantryList.concat(data[0].item_name)})
-        }
-      })
-    })
+    this.setState({pantryList: pantryData.map(item => [item.item_name, item.expiration, item.amount])})
   }
 
   handleChangeInput = (event) => {
@@ -105,7 +96,7 @@ class App extends React.Component {
           {this.state.pantryList.map(item =>
             <div>
               <li>
-                {item}
+                {item[0]}   Expiration Date : {item[1].substring(0,10)}   Amount : {item[2]}
                 <button onClick={this.handleRemoveItem.bind(this)} value={item}>Remove</button>
                 <button onClick={this.handleAddToShoppingList.bind(this)} value={item}>Add to Shopping List</button>
               </li>
