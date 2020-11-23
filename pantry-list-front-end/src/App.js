@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 
-const apiPORT = 9000;
+const API = 9000;
 
 class App extends React.Component {
   constructor(props){
@@ -10,38 +10,34 @@ class App extends React.Component {
       inputItem: '',
       dateInput: '',
       amountInput:'',
-      pantryList: [],
       itemsList: [],
-      item_id: null,
+      pantryList: [],
     }
   }
 
   componentDidMount = async () => {
     //Show item history to the dropdown menu
-    const itemsResponse = await fetch(`http://localhost:${apiPORT}/items`, { method: 'GET' })
+    const itemsResponse = await fetch(`http://localhost:${API}/items`, { method: 'GET' })
     const itemsData = await itemsResponse.json()
-    this.setState(
-        {itemsList: itemsData},
-        () => {
-          if(this.state.itemsList){
-            this.setState({inputItem: this.state.itemsList[0].item_name, item_id: this.state.itemsList[0].item_id})
-          } 
-        } 
-      )
+    this.setState({itemsList: itemsData})
 
     //Show existing pantry list
-    const pantryResponse = await fetch(`http://localhost:${apiPORT}/selectPantryList`, { method: 'GET' })
-    const pantryData = await pantryResponse.json()
-    this.setState({pantryList: pantryData})
+    this.refreshPantryList()
   }
 
-  handleChangeInput = (event) => {
+  refreshPantryList = () => {
+    fetch(`http://localhost:${API}/selectPantryList`, { method: 'GET' })
+    .then(response => response.json())
+    .then(data => this.setState({pantryList: data}))    
+  }
+
+  handleSelectInput = (event) => {
+    const params = JSON.parse(event.target.value)
+    this.setState({inputItem: params.item_name})
+  }
+
+  handleTextInput = (event) => {
     this.setState({inputItem: event.target.value})
-  }
-
-  handleSelectChangeInput = (event) => {
-    const item = event.target.value.split(',')
-    this.setState({inputItem: item[0], item_id: item[1]})
   }
 
   handleDateInput = (event) => {
@@ -52,11 +48,17 @@ class App extends React.Component {
     this.setState({amountInput: Number.parseInt(event.target.value)})
   }
 
-  handleIncreaseAmount = (event) => {
-    const pantry_item_id = Number.parseInt(event.target.value)
-    const item = this.state.pantryList.filter(item => item.pantry_item_id === pantry_item_id)
-    const amount = item[0].amount + 1
-    fetch(`http://localhost:${apiPORT}/pantryList/`, {
+  handleChangeAmount = (event) => {
+    const params = JSON.parse(event.target.value)
+    const pantry_item_id = Number.parseInt(params.pantry_item_id)
+    const action = params.action
+    let amount = params.amount
+    if(action === 'increase'){
+      amount++
+    } else if (action === 'decrease'){
+      amount--
+    }
+    fetch(`http://localhost:${API}/pantryList/`, {
       method: 'PUT',
       headers: { 'Content-Type':  'application/json' },
       body: JSON.stringify({
@@ -65,28 +67,7 @@ class App extends React.Component {
             })
     })
     .then(()=>{
-      fetch(`http://localhost:${apiPORT}/selectPantryList`, { method: 'GET' })
-      .then(pantryResponse => pantryResponse.json())
-      .then(pantryData => this.setState({pantryList: pantryData}))
-    })
-  }
-
-  handleDecreaseAmount = (event) => {
-    const pantry_item_id = Number.parseInt(event.target.value)
-    const item = this.state.pantryList.filter(item => item.pantry_item_id === pantry_item_id)
-    const amount = item[0].amount - 1
-    fetch(`http://localhost:${apiPORT}/pantryList/`, {
-      method: 'PUT',
-      headers: { 'Content-Type':  'application/json' },
-      body: JSON.stringify({
-              amount: amount,
-              pantry_item_id: pantry_item_id,
-            })
-    })
-    .then(()=>{
-      fetch(`http://localhost:${apiPORT}/selectPantryList`, { method: 'GET' })
-      .then(pantryResponse => pantryResponse.json())
-      .then(pantryData => this.setState({pantryList: pantryData}))
+      this.refreshPantryList()
     })
   }
 
@@ -98,7 +79,7 @@ class App extends React.Component {
       //Add new item to the item history
       const tempArr = this.state.itemsList.filter(item => item.item_name === item_name)
       if(tempArr.length === 0){
-        fetch(`http://localhost:${apiPORT}/item`, {
+        fetch(`http://localhost:${API}/item`, {
           method: 'POST',
           headers: { 'Content-Type':  'application/json' },
           body: JSON.stringify({
@@ -107,7 +88,7 @@ class App extends React.Component {
                })
           })
         .then(()=>{
-            fetch(`http://localhost:${apiPORT}/items?item_name=${item_name}`, {method: 'GET'})
+            fetch(`http://localhost:${API}/items?item_name=${item_name}`, {method: 'GET'})
             .then(res => res.json())
             .then(data => {
               alert(JSON.stringify(data))
@@ -123,7 +104,7 @@ class App extends React.Component {
     promise
       .then((item_id) =>
         //Add item to the pantry list
-        fetch(`http://localhost:${apiPORT}/pantryList/`, {
+        fetch(`http://localhost:${API}/pantryList/`, {
           method: 'POST',
           headers: { 'Content-Type':  'application/json' },
           body: JSON.stringify({
@@ -133,9 +114,7 @@ class App extends React.Component {
                 })
           })    
         .then(()=>{
-          fetch(`http://localhost:${apiPORT}/selectPantryList`, { method: 'GET' })
-          .then(pantryResponse => pantryResponse.json())
-          .then(pantryData => this.setState({pantryList: pantryData}))
+          this.refreshPantryList()
         })
       )
 
@@ -143,7 +122,7 @@ class App extends React.Component {
 
   handleRemoveItem = (event) => {
     const pantry_item_id = Number.parseInt(event.target.value)
-    fetch(`http://localhost:${apiPORT}/pantryList/${pantry_item_id}`, {
+    fetch(`http://localhost:${API}/pantryList/${pantry_item_id}`, {
       method: 'DELETE',
       headers: { 'Content-Type':  'application/json' },
       })
@@ -159,7 +138,7 @@ class App extends React.Component {
     const listID = 1 //TODO: FIGURE OUT HOW TO GET LIST ID
     const itemID = item[0].item_id
     const itemCount = item[0].amount
-    fetch(`http://localhost:${apiPORT}/shoppinglist/${listID}/item`, {
+    fetch(`http://localhost:${API}/shoppinglist/${listID}/item`, {
       method: 'POST',
       headers: { 'Content-Type':  'application/json' },
       body: JSON.stringify({
@@ -178,15 +157,16 @@ class App extends React.Component {
         <form onSubmit={this.handleAddItem.bind(this)}>
           <label>
             Choose from item history:
-            <select onChange={this.handleSelectChangeInput.bind(this)}>
+            <select onChange={this.handleSelectInput.bind(this)}>
+              <option value="" disabled selected>Select your option</option>
               {this.state.itemsList.map(item => 
-                <option value={[item.item_name, item.item_id]} >{item.item_name}</option>
+                <option value={ JSON.stringify({item_name: item.item_name, item_id: item.item_id}) } >{item.item_name}</option>
               )}
             </select>
           </label>
           <label>
             Or input new item:
-            <input type='text' placeholder="item name" onChange={this.handleChangeInput}/>
+            <input type='text' placeholder="item name" onChange={this.handleTextInput}/>
           </label>
           <br/>
           <label for="expiration">
@@ -206,8 +186,8 @@ class App extends React.Component {
             <div>
               <li>
                 {item.item_name}   Expiration Date : {item.expiration.substring(0,10)}   Amount : {item.amount}
-                <button onClick={this.handleIncreaseAmount.bind(this)} value={item.pantry_item_id}>Increase Amount</button>
-                <button onClick={this.handleDecreaseAmount.bind(this)} value={item.pantry_item_id}>Decrease Amount</button>
+                <button onClick={this.handleChangeAmount.bind(this)} value={JSON.stringify({pantry_item_id: item.pantry_item_id, amount: item.amount, action: 'increase'})}>Increase Amount</button>
+                <button onClick={this.handleChangeAmount.bind(this)} value={JSON.stringify({pantry_item_id: item.pantry_item_id, amount: item.amount, action: 'decrease'})}>Decrease Amount</button>
                 <button onClick={this.handleRemoveItem.bind(this)} value={item.pantry_item_id}>Remove</button>
                 <button onClick={this.handleAddToShoppingList.bind(this)} value={item.pantry_item_id}>Add to Shopping List</button>
               </li>
