@@ -38,6 +38,9 @@ app.get('/pantryList/:itemId', pantryDB.getItemByItemId)
 // POST item to pantry list, requires body to have "item_id", "expiration", and "amount"
 app.post('/pantryList', pantryDB.postToPantryList)
 
+// POST item to pantry list, requires body to have "amount, pantry_item_id"
+app.put('/pantryList', pantryDB.updatePantryItemAmount)
+
 // DELETE pantry list item 
 app.delete('/pantryList/:pantryItemId', pantryDB.deletePantryItem)
 

@@ -62,9 +62,9 @@ const postToPantryList = (request, response) => {
       'INSERT INTO tbl_pantrylist (item_id, expiration, amount) VALUES ($1, $2, $3)',
       [item_id, expiration, amount],
       (error, results) => {
-          if (error) {
-              throw error;
-          }
+        if (error) {
+            throw error;
+        }
       }
     );
     result = {
@@ -79,6 +79,33 @@ const postToPantryList = (request, response) => {
       response.status(400);
   }
   response.json(result);
+}
+
+const updatePantryItemAmount = (request, response) => {
+  //need pantry_item_id and amount
+  const { amount, pantry_item_id } = request.body
+  if (amount && pantry_item_id) {
+    pool.query(
+      'UPDATE tbl_pantrylist SET amount = $1 WHERE pantry_item_id = $2;',
+      [amount, pantry_item_id],
+      (error, results) => {
+        if (error) {
+            throw error;
+        }
+      }
+    )
+    result = {
+        status: "success",
+        message: "The message was successfully sent",
+    }
+  } else {
+      result = {
+          status: "failed",
+          message: "The message was not sent",
+      }
+      response.status(400)
+  }
+  response.json(result)
 }
 
 const deletePantryItem = (request, response) => {
@@ -113,6 +140,7 @@ module.exports = {
                   getPantryList,
                   getItemByItemId,
                   postToPantryList,
+                  updatePantryItemAmount,
                   deletePantryItem
                  }
 

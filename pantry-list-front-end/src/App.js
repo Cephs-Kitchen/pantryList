@@ -52,6 +52,44 @@ class App extends React.Component {
     this.setState({amountInput: Number.parseInt(event.target.value)})
   }
 
+  handleIncreaseAmount = (event) => {
+    const pantry_item_id = Number.parseInt(event.target.value)
+    const item = this.state.pantryList.filter(item => item.pantry_item_id === pantry_item_id)
+    const amount = item[0].amount + 1
+    fetch(`http://localhost:${apiPORT}/pantryList/`, {
+      method: 'PUT',
+      headers: { 'Content-Type':  'application/json' },
+      body: JSON.stringify({
+              amount: amount,
+              pantry_item_id: pantry_item_id,
+            })
+    })
+    .then(()=>{
+      fetch(`http://localhost:${apiPORT}/selectPantryList`, { method: 'GET' })
+      .then(pantryResponse => pantryResponse.json())
+      .then(pantryData => this.setState({pantryList: pantryData}))
+    })
+  }
+
+  handleDecreaseAmount = (event) => {
+    const pantry_item_id = Number.parseInt(event.target.value)
+    const item = this.state.pantryList.filter(item => item.pantry_item_id === pantry_item_id)
+    const amount = item[0].amount - 1
+    fetch(`http://localhost:${apiPORT}/pantryList/`, {
+      method: 'PUT',
+      headers: { 'Content-Type':  'application/json' },
+      body: JSON.stringify({
+              amount: amount,
+              pantry_item_id: pantry_item_id,
+            })
+    })
+    .then(()=>{
+      fetch(`http://localhost:${apiPORT}/selectPantryList`, { method: 'GET' })
+      .then(pantryResponse => pantryResponse.json())
+      .then(pantryData => this.setState({pantryList: pantryData}))
+    })
+  }
+
   handleAddItem = async (event) => {
     event.preventDefault()
     var item_name = this.state.inputItem
@@ -168,6 +206,8 @@ class App extends React.Component {
             <div>
               <li>
                 {item.item_name}   Expiration Date : {item.expiration.substring(0,10)}   Amount : {item.amount}
+                <button onClick={this.handleIncreaseAmount.bind(this)} value={item.pantry_item_id}>Increase Amount</button>
+                <button onClick={this.handleDecreaseAmount.bind(this)} value={item.pantry_item_id}>Decrease Amount</button>
                 <button onClick={this.handleRemoveItem.bind(this)} value={item.pantry_item_id}>Remove</button>
                 <button onClick={this.handleAddToShoppingList.bind(this)} value={item.pantry_item_id}>Add to Shopping List</button>
               </li>
