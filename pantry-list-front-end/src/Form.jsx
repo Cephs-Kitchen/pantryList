@@ -3,6 +3,7 @@ function Form(props){
         <form onSubmit={props.handleAddItem}>
             <label>
             Choose from item history:
+            <br/>
             <select onChange={props.handleItemInput}>
                 <option value="" disabled selected>Select item</option>
                 {props.itemsList.map(item => 
@@ -12,11 +13,9 @@ function Form(props){
             <br/>
             </label>
             <label>
-            Or input new item:
+            Or input new item and assign it a category:
+            <br/>
             <input type='text' placeholder="item name" onChange={props.handleItemInput}/>
-            </label>
-            <label>
-            Choose category:
             <select onChange={props.handleSelectCategoryInput.bind(this)}>
                 <option value="" disabled selected>Select category</option>
                 {props.categoriesList.map(category => 
