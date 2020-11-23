@@ -7,9 +7,11 @@ class App extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      inputItem: '',
+      itemInput: '',
+      categoryInput: '',
       dateInput: '',
       amountInput:'',
+      categoriesList: [],
       itemsList: [],
       pantryList: [],
     }
@@ -21,6 +23,10 @@ class App extends React.Component {
     const itemsData = await itemsResponse.json()
     this.setState({itemsList: itemsData})
 
+    const categoriesResponse = await fetch(`http://localhost:${API}/categories`, { method: 'GET' })
+    const categoriesData = await categoriesResponse.json()
+    this.setState({categoriesList: categoriesData})
+
     //Show existing pantry list
     this.refreshPantryList()
   }
@@ -31,13 +37,12 @@ class App extends React.Component {
     .then(data => this.setState({pantryList: data}))    
   }
 
-  handleSelectInput = (event) => {
-    const params = JSON.parse(event.target.value)
-    this.setState({inputItem: params.item_name})
+  handleItemInput = (event) => {
+    this.setState({itemInput: event.target.value})
   }
 
-  handleTextInput = (event) => {
-    this.setState({inputItem: event.target.value})
+  handleSelectCategoryInput = (event) => {
+    this.setState({categoryInput: event.target.value})
   }
 
   handleDateInput = (event) => {
@@ -73,7 +78,8 @@ class App extends React.Component {
 
   handleAddItem = async (event) => {
     event.preventDefault()
-    var item_name = this.state.inputItem
+    var item_name = this.state.itemInput
+    var category = JSON.parse(this.state.categoryInput)
     item_name = item_name[0].toUpperCase() + item_name.substring(1)
     var promise = new Promise((resolve, reject) => {
       //Add new item to the item history
@@ -84,7 +90,7 @@ class App extends React.Component {
           headers: { 'Content-Type':  'application/json' },
           body: JSON.stringify({
                   name: item_name,
-                  categoryID: 1, //TODO: FIX FOR CATEGORIES
+                  categoryID: category.category_id, //TODO: FIX FOR CATEGORIES
                })
           })
         .then(()=>{
@@ -157,16 +163,16 @@ class App extends React.Component {
         <form onSubmit={this.handleAddItem.bind(this)}>
           <label>
             Choose from item history:
-            <select onChange={this.handleSelectInput.bind(this)}>
-              <option value="" disabled selected>Select your option</option>
+            <select onChange={this.handleItemInput.bind(this)}>
+              <option value="" disabled selected>Select item</option>
               {this.state.itemsList.map(item => 
-                <option value={ JSON.stringify({item_name: item.item_name, item_id: item.item_id}) } >{item.item_name}</option>
+                <option value={item.item_name} >{item.item_name}</option>
               )}
             </select>
           </label>
           <label>
             Or input new item:
-            <input type='text' placeholder="item name" onChange={this.handleTextInput}/>
+            <input type='text' placeholder="item name" onChange={this.handleItemInput}/>
           </label>
           <br/>
           <label for="expiration">
@@ -176,6 +182,15 @@ class App extends React.Component {
           <label for="amount">
             Amount:
             <input type="number" name="amount" id="amount" onChange={this.handleAmountInput}/>
+          </label>
+          <label>
+            Choose category:
+            <select onChange={this.handleSelectCategoryInput.bind(this)}>
+              <option value="" disabled selected>Select category</option>
+              {this.state.categoriesList.map(category => 
+                <option value={JSON.stringify(category)} >{category.category_name}</option>
+              )}
+            </select>
           </label>
           <br/>
           <button type="submit">Add Item</button>

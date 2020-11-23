@@ -50,6 +50,8 @@ app.post('/shoppinglist/:listId/item', shoppingDB.postToShoppingList)
 // for testing: GET shopping list
 app.get('/shoppinglist/:listId/items', shoppingDB.getShoppingList)
 
+app.get('/categories', categoryDB.getCategories)
+
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
 })
