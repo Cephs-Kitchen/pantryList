@@ -61,7 +61,6 @@ class App extends React.Component {
 
   handleAddItem = async (event) => {
     event.preventDefault()
-    var category = JSON.parse(this.state.categoryInput)
     var item_name = this.state.itemInput
     item_name = item_name[0].toUpperCase() + item_name.substring(1)
 
@@ -74,7 +73,7 @@ class App extends React.Component {
           headers: { 'Content-Type':  'application/json' },
           body: JSON.stringify({
                   name: item_name,
-                  categoryID: category.category_id,
+                  categoryID: JSON.parse(this.state.categoryInput).category_id,
                 })
           })
         .then(()=>
@@ -175,11 +174,23 @@ class App extends React.Component {
           {this.state.pantryList.map(item =>
             <div>
               <li>
-                {item.item_name}   Expiration Date : {item.expiration.substring(0,10)}   Amount : {item.amount}
-                <button onClick={this.handleChangeAmount.bind(this)} value={JSON.stringify({pantry_item_id: item.pantry_item_id, amount: item.amount, action: 'increase'})}>Increase Amount</button>
-                <button onClick={this.handleChangeAmount.bind(this)} value={JSON.stringify({pantry_item_id: item.pantry_item_id, amount: item.amount, action: 'decrease'})}>Decrease Amount</button>
-                <button onClick={this.handleRemoveItem.bind(this)} value={JSON.stringify({pantry_item_id: item.pantry_item_id})}>Remove</button>
-                <button onClick={this.handleAddToShoppingList.bind(this)} value={JSON.stringify({pantry_item_id: item.pantry_item_id, item_id: item.item_id, amount: item.amount})}>Add to Shopping List</button>
+                {item.item_name}   Expiration Date : {item.expiration ? item.expiration.substring(0,10) : 'N/A'}   Amount : {item.amount ? item.amount : 'N/A'}
+                <button 
+                  onClick={this.handleChangeAmount.bind(this)} 
+                  value={JSON.stringify({pantry_item_id: item.pantry_item_id, amount: item.amount, action: 'increase'})}
+                > Increase Amount</button>
+                <button 
+                  onClick={this.handleChangeAmount.bind(this)} 
+                  value={JSON.stringify({pantry_item_id: item.pantry_item_id, amount: item.amount, action: 'decrease'})}
+                > Decrease Amount</button>
+                <button 
+                  onClick={this.handleRemoveItem.bind(this)} 
+                  value={JSON.stringify({pantry_item_id: item.pantry_item_id})}
+                > Remove</button>
+                <button 
+                  onClick={this.handleAddToShoppingList.bind(this)} 
+                  value={JSON.stringify({pantry_item_id: item.pantry_item_id, item_id: item.item_id, amount: item.amount})}
+                > Add to Shopping List</button>
               </li>
             </div>
           )}

@@ -56,8 +56,14 @@ const getItemByItemId = (request, response) => {
 const postToPantryList = (request, response) => {
   const id = parseInt(request.params.itemId)
   let result;
-  const { item_id, expiration, amount } = request.body
-  if (item_id && expiration && amount) {
+  let { item_id, expiration, amount } = request.body
+  if (!expiration){
+    expiration = null
+  }
+  if (!amount){
+    amount = 0
+  }
+  if (item_id) {
     pool.query(
       'INSERT INTO tbl_pantrylist (item_id, expiration, amount) VALUES ($1, $2, $3)',
       [item_id, expiration, amount],

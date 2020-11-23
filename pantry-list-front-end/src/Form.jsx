@@ -9,19 +9,11 @@ function Form(props){
                     <option value={item.item_name} >{item.item_name}</option>
                 )}
             </select>
+            <br/>
             </label>
             <label>
             Or input new item:
             <input type='text' placeholder="item name" onChange={props.handleItemInput}/>
-            </label>
-            <br/>
-            <label for="expiration">
-            Expiration Date:
-            <input type='date' name="expiration" id="expiration" onChange={props.handleDateInput}/>
-            </label>
-            <label for="amount">
-            Amount:
-            <input type="number" name="amount" id="amount" onChange={props.handleAmountInput}/>
             </label>
             <label>
             Choose category:
@@ -32,6 +24,16 @@ function Form(props){
                 )}
             </select>
             </label>
+            <br/>
+            <label for="expiration">
+            Expiration Date:
+            <input type='date' name="expiration" id="expiration" onChange={props.handleDateInput}/>
+            </label>
+            <label for="amount">
+            Amount:
+            <input type="number" name="amount" id="amount" onChange={props.handleAmountInput}/>
+            </label>
+
             <br/>
             <button type="submit">Add Item</button>
         </form>
