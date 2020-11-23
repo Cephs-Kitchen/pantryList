@@ -2,31 +2,61 @@ const db = require('./pool').getPool()
 
 //---------------------SHOPPING LIST---------------------
 // POST item to shoppinglist
+
 const postToShoppingList = (req, res) => {
     let result;
     const itemDetails = req.body;
     if (itemDetails.listID && itemDetails.itemID && itemDetails.itemCount) {
         db.query(
-            "INSERT INTO tbl_shoppinglist_items (list_id, item_id, item_count) VALUES ($1, $2, $3)",
-            [itemDetails.listID, itemDetails.itemID, itemDetails.itemCount],
+            "SELECT link_id FROM tbl_shoppinglist_items WHERE item_id = $1 AND list_id = $2",
+            [itemDetails.itemID, itemDetails.listID],
             (db_err, db_res) => {
                 if (db_err) {
                     throw db_err;
                 }
+                let qryResult = db_res.rows;
+                console.log(qryResult);
+                if (qryResult.length == 0) {
+                    db.query(
+                        "INSERT INTO tbl_shoppinglist_items (list_id, item_id, item_count) VALUES ($1, $2, $3)",
+                        [
+                            itemDetails.listID,
+                            itemDetails.itemID,
+                            itemDetails.itemCount,
+                        ],
+                        (db_err, db_res) => {
+                            if (db_err) {
+                                throw db_err;
+                            }
+                        }
+                    );
+                } else {
+                    db.query(
+                        "UPDATE tbl_shoppinglist_items SET item_count = item_count + 1 WHERE link_id = $1",
+                        [qryResult[0].link_id],
+                        (db_err, db_res) => {
+                            if (db_err) {
+                                throw db_err;
+                            }
+                        }
+                    );
+                }
+                result = {
+                    status: "success",
+                    message:
+                        "The item was successfully added to the shoppinglist",
+                };
+                res.json(result);
             }
         );
-        result = {
-            status: "success",
-            message: "The item was successfully added to the shoppinglist",
-        };
     } else {
         result = {
             status: "failed",
             message: "The item was not added to the shoppinglist",
         };
         res.status(400);
+        res.json(result);
     }
-    res.json(result);
 }
 
 //FOR TESTING: GET item from shopping list
