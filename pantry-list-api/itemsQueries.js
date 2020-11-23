@@ -22,16 +22,6 @@ const getItems = (request, response) => {
   }
 }
 
-const getItemByItemId = (request, response) => {
-  const id = parseInt(request.params.itemId)
-  pool.query('SELECT * FROM tbl_items WHERE item_id = $1', [id], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
-
 const postItem = (req, res) => {
   let result;
   const itemDetails = req.body;
@@ -58,6 +48,18 @@ const postItem = (req, res) => {
   }
   res.json(result);
 }
+
+////------UNUSED------
+const getItemByItemId = (request, response) => {
+  const id = parseInt(request.params.itemId)
+  pool.query('SELECT * FROM tbl_items WHERE item_id = $1', [id], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 
 module.exports = {
                   getItems,

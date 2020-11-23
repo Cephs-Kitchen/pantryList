@@ -2,7 +2,7 @@ const pool = require('./pool').getPool()
 
 //---------------------PANTRY---------------------
 
-const getSelectPantryList = (request, response) => {
+const getPantryList = (request, response) => {
   let str = 'SELECT pantry_item_id, tbl_items.item_id, expiration, amount, item_name, category_name FROM tbl_pantrylist INNER JOIN tbl_items ON tbl_pantrylist.item_id = tbl_items.item_id INNER JOIN tbl_item_categories ON tbl_items.category_id = tbl_item_categories.category_id' 
   const sortBy = request.query.sortBy
   if (sortBy === 'expiration'){
@@ -31,15 +31,6 @@ const getSelectPantryList = (request, response) => {
         response.status(200).json(results.rows)
       })
   }
-}
-
-const getPantryList = (request, response) => {
-  pool.query('SELECT * FROM tbl_pantrylist', (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })  
 }
 
 const getItemByItemId = (request, response) => {
@@ -142,7 +133,6 @@ const deletePantryItem = (request, response) => {
 }
 
 module.exports = {
-                  getSelectPantryList,
                   getPantryList,
                   getItemByItemId,
                   postToPantryList,
