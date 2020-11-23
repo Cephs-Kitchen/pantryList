@@ -7,7 +7,7 @@ const getSelectPantryList = (request, response) => {
   const sortBy = request.query.sortBy
   if (sortBy === 'expiration'){
     pool.query(    
-      str+' ORDER BY expiration ASC;', 
+      str+' ORDER BY expiration ASC, pantry_item_id ASC;', 
       (error, results) => {
       if (error) {
         throw error
@@ -16,7 +16,7 @@ const getSelectPantryList = (request, response) => {
     })
   } else if (sortBy === 'category'){
     pool.query(    
-      str+' ORDER BY category_name ASC;', 
+      str+' ORDER BY category_name ASC, pantry_item_id ASC;', 
       (error, results) => {
       if (error) {
         throw error

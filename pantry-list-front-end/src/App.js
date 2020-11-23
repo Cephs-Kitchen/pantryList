@@ -1,6 +1,7 @@
 import './App.css';
 import React from 'react';
 import Form from './Form';
+import PantryList from './PantryList';
 
 const API = 9000;
 
@@ -15,6 +16,8 @@ class App extends React.Component {
       categoriesList: [],
       itemsList: [],
       pantryList: [],
+      sortBy: '',
+      flippedFlag: false,
     }
   }
 
@@ -38,9 +41,15 @@ class App extends React.Component {
   }
 
   refreshPantryList = () => {
-    fetch(`http://localhost:${API}/selectPantryList`, { method: 'GET' })
+    fetch(`http://localhost:${API}/selectPantryList?sortBy=${this.state.sortBy}`, { method: 'GET' })
     .then(response => response.json())
-    .then(data => this.setState({pantryList: data}))    
+    .then(data => {
+      if(this.state.flippedFlag){
+        this.setState({pantryList: data.slice().reverse()})
+      } else {
+        this.setState({pantryList: data})
+      }
+    })    
   }
 
   handleItemInput = (event) => {
@@ -157,13 +166,14 @@ class App extends React.Component {
   }
 
   handleSortBy = (event) => {
+    this.setState({sortBy: event.target.value, flippedFlag: false})
     fetch(`http://localhost:${API}/selectPantryList?sortBy=${event.target.value}`, { method: 'GET' })
     .then(response => response.json())
     .then(data => this.setState({pantryList: data}))   
   }
 
   handleFlipOrder = () => {
-    this.setState({pantryList: this.state.pantryList.slice().reverse()})
+    this.setState({flippedFlag: !this.state.flippedFlag}, this.refreshPantryList)
   }
 
   render() {
@@ -180,48 +190,17 @@ class App extends React.Component {
           handleAddItem = {this.handleAddItem}
         />
         <h1> Pantry List </h1>
-        <label>
-          Sort By:
-          <select onChange={this.handleSortBy}>
-              <option value="" disabled selected>Select</option>
-              <option value={"expiration"} >expiration</option>
-              <option value={"category"} >category</option>
-              <option value={""} >date added</option>
-          </select>
-          <br/>
-        </label>
-
-        <button onClick={this.handleFlipOrder}>Flip Order</button>
-
-        <ul>
-          {this.state.pantryList.map(item =>
-            <div>
-              <li>
-                {item.item_name}   Expiration Date : {item.expiration ? item.expiration.substring(0,10) : 'N/A'}   Amount : {item.amount ? item.amount : 'N/A'}
-                <button 
-                  onClick={this.handleChangeAmount.bind(this)} 
-                  value={JSON.stringify({pantry_item_id: item.pantry_item_id, amount: item.amount, action: 'increase'})}
-                > Increase Amount</button>
-                <button 
-                  onClick={this.handleChangeAmount.bind(this)} 
-                  value={JSON.stringify({pantry_item_id: item.pantry_item_id, amount: item.amount, action: 'decrease'})}
-                > Decrease Amount</button>
-                <button 
-                  onClick={this.handleRemoveItem.bind(this)} 
-                  value={JSON.stringify({pantry_item_id: item.pantry_item_id})}
-                > Remove</button>
-                <button 
-                  onClick={this.handleAddToShoppingList.bind(this)} 
-                  value={JSON.stringify({pantry_item_id: item.pantry_item_id, item_id: item.item_id, amount: item.amount})}
-                > Add to Shopping List</button>
-              </li>
-            </div>
-          )}
-        </ul>
+        <PantryList
+          pantryList = {this.state.pantryList}
+          handleSortBy = {this.handleSortBy}
+          handleFlipOrder = {this.handleFlipOrder}
+          handleChangeAmount = {this.handleChangeAmount}
+          handleRemoveItem = {this.handleRemoveItem}
+          handleAddToShoppingList = {this.handleAddToShoppingList}
+        />
       </div>
     );
   }
-
 }
 
 export default App;
