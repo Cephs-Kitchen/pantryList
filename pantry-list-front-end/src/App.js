@@ -156,6 +156,16 @@ class App extends React.Component {
     this.handleRemoveItem(event)
   }
 
+  handleSortBy = (event) => {
+    fetch(`http://localhost:${API}/selectPantryList?sortBy=${event.target.value}`, { method: 'GET' })
+    .then(response => response.json())
+    .then(data => this.setState({pantryList: data}))   
+  }
+
+  handleFlipOrder = () => {
+    this.setState({pantryList: this.state.pantryList.slice().reverse()})
+  }
+
   render() {
     return (
       <div className="App">
@@ -170,6 +180,19 @@ class App extends React.Component {
           handleAddItem = {this.handleAddItem}
         />
         <h1> Pantry List </h1>
+        <label>
+          Sort By:
+          <select onChange={this.handleSortBy}>
+              <option value="" disabled selected>Select</option>
+              <option value={"expiration"} >expiration</option>
+              <option value={"category"} >category</option>
+              <option value={""} >date added</option>
+          </select>
+          <br/>
+        </label>
+
+        <button onClick={this.handleFlipOrder}>Flip Order</button>
+
         <ul>
           {this.state.pantryList.map(item =>
             <div>
