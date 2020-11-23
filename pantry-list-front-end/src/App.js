@@ -41,7 +41,7 @@ class App extends React.Component {
   }
 
   refreshPantryList = () => {
-    fetch(`http://localhost:${API}/selectPantryList?sortBy=${this.state.sortBy}`, { method: 'GET' })
+    fetch(`http://localhost:${API}/pantryList?sortBy=${this.state.sortBy}`, { method: 'GET' })
     .then(response => response.json())
     .then(data => {
       if(this.state.flippedFlag){
@@ -166,10 +166,7 @@ class App extends React.Component {
   }
 
   handleSortBy = (event) => {
-    this.setState({sortBy: event.target.value, flippedFlag: false})
-    fetch(`http://localhost:${API}/selectPantryList?sortBy=${event.target.value}`, { method: 'GET' })
-    .then(response => response.json())
-    .then(data => this.setState({pantryList: data}))   
+    this.setState({sortBy: event.target.value, flippedFlag: false}, this.refreshPantryList)
   }
 
   handleFlipOrder = () => {
