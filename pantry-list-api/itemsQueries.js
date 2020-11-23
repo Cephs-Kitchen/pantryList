@@ -13,7 +13,7 @@ const getItems = (request, response) => {
       response.status(200).json(results.rows)
     })
   } else {
-    pool.query('SELECT * FROM tbl_items', (error, results) => {
+    pool.query('SELECT * FROM tbl_items ORDER BY category_id', (error, results) => {
       if (error) {
         throw error
       }
