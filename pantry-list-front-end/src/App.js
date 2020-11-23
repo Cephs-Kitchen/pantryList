@@ -8,6 +8,7 @@ class App extends React.Component {
     super(props)
     this.state = {
       inputItem: '',
+      dateInput: '',
       pantryList: [],
       itemsList: [],
       item_id: null,
@@ -40,6 +41,10 @@ class App extends React.Component {
   handleSelectChangeInput = (event) => {
     const item = event.target.value.split(',')
     this.setState({inputItem: item[0], item_id: item[1]})
+  }
+
+  handleDateInput = (event) => {
+    this.setState({dateInput: event.target.value})
   }
 
   handleAddItem = async (event) => {
@@ -79,7 +84,7 @@ class App extends React.Component {
           headers: { 'Content-Type':  'application/json' },
           body: JSON.stringify({
                   item_id: item_id,
-                  expiration: '2020-01-01', //TODO: FIX INPUT
+                  expiration: this.state.dateInput,
                   amount: 1 //TODO: FIX INPUT
                 })
           })    
@@ -114,8 +119,9 @@ class App extends React.Component {
         <h1> Pantry List </h1>
 
         <input type='text' placeholder="item name" onChange={this.handleChangeInput}/>
+        <label for="expiration">Expiration Date:</label>
+        <input type='date' name="expiration" id="expiration" onChange={this.handleDateInput}/>
         <button onClick={this.handleAddItem}>Add Item</button>
-
         <form onSubmit={this.handleAddItem.bind(this)}>
           <label>
             Choose from item history:
