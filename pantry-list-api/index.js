@@ -3,6 +3,8 @@ const bodyParser = require('body-parser')
 const categoryDB = require('./categoryQueries')
 const itemsDB = require('./itemsQueries')
 const pantryDB = require('./pantryQueries')
+const shoppingDB = require('./shoppingQueries')
+
 const app = express()
 const port = 9000
 
@@ -38,6 +40,12 @@ app.post('/pantryList', pantryDB.postToPantryList)
 
 // DELETE pantry list item 
 app.delete('/pantryList/:pantryItemId', pantryDB.deletePantryItem)
+
+// POST item to shopping list, requires body to have "listID, itemID, itemCount"
+app.post('/shoppinglist/:listId/item', shoppingDB.postToShoppingList)
+
+// for testing: GET shopping list
+app.get('/shoppinglist/:listId/items', shoppingDB.getShoppingList)
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
