@@ -9,6 +9,7 @@ class App extends React.Component {
     this.state = {
       inputItem: '',
       dateInput: '',
+      amountInput:'',
       pantryList: [],
       itemsList: [],
       item_id: null,
@@ -47,6 +48,10 @@ class App extends React.Component {
     this.setState({dateInput: event.target.value})
   }
 
+  handleAmountInput = (event) => {
+    this.setState({amountInput: Number.parseInt(event.target.value)})
+  }
+
   handleAddItem = async (event) => {
     event.preventDefault()
     var item_name = this.state.inputItem
@@ -67,6 +72,7 @@ class App extends React.Component {
             fetch(`http://localhost:${apiPORT}/items?item_name=${item_name}`, {method: 'GET'})
             .then(res => res.json())
             .then(data => {
+              alert(JSON.stringify(data))
               this.setState({itemsList: this.state.itemsList.concat(data[0])}, resolve(data[0].item_id))
             })
           }
@@ -85,7 +91,7 @@ class App extends React.Component {
           body: JSON.stringify({
                   item_id: item_id,
                   expiration: this.state.dateInput,
-                  amount: 1 //TODO: FIX INPUT
+                  amount: this.state.amountInput,
                 })
           })    
         .then(()=>{
@@ -99,7 +105,6 @@ class App extends React.Component {
 
   handleRemoveItem = (event) => {
     const pantry_item_id = Number.parseInt(event.target.value)
-    alert(pantry_item_id)
     fetch(`http://localhost:${apiPORT}/pantryList/${pantry_item_id}`, {
       method: 'DELETE',
       headers: { 'Content-Type':  'application/json' },
@@ -117,11 +122,6 @@ class App extends React.Component {
     return (
       <div className="App">
         <h1> Pantry List </h1>
-
-        <input type='text' placeholder="item name" onChange={this.handleChangeInput}/>
-        <label for="expiration">Expiration Date:</label>
-        <input type='date' name="expiration" id="expiration" onChange={this.handleDateInput}/>
-        <button onClick={this.handleAddItem}>Add Item</button>
         <form onSubmit={this.handleAddItem.bind(this)}>
           <label>
             Choose from item history:
@@ -131,9 +131,22 @@ class App extends React.Component {
               )}
             </select>
           </label>
-          <input type="submit" value="Submit" />
+          <label>
+            Or input new item:
+            <input type='text' placeholder="item name" onChange={this.handleChangeInput}/>
+          </label>
+          <br/>
+          <label for="expiration">
+            Expiration Date:
+            <input type='date' name="expiration" id="expiration" onChange={this.handleDateInput}/>
+          </label>
+          <label for="amount">
+            Amount:
+            <input type="number" name="amount" id="amount" onChange={this.handleAmountInput}/>
+          </label>
+          <br/>
+          <button type="submit">Add Item</button>
         </form>
-
         <ul>
           {this.state.pantryList.map(item =>
             <div>
