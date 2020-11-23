@@ -83,10 +83,10 @@ class App extends React.Component {
                   amount: 1 //TODO: FIX INPUT
                 })
           })    
-        .then(()=>{ //TODO: CANNOT DIFFERENTIATE BTWN PANTRY ITEMS WITH SAME ITEM NAME/ID. NEED TO GET PANTRY ITEM ID.
-          fetch(`http://localhost:${apiPORT}/pantryList/${item_id}`, {method: 'GET'})
-          .then(res => res.json())
-          .then(data => { this.setState({pantryList: this.state.pantryList.concat(data[0])})})
+        .then(()=>{
+          fetch(`http://localhost:${apiPORT}/selectPantryList`, { method: 'GET' })
+          .then(pantryResponse => pantryResponse.json())
+          .then(pantryData => this.setState({pantryList: pantryData}))
         })
       )
 
