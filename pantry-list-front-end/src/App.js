@@ -1,5 +1,6 @@
 import './App.css';
 import React from 'react';
+import Form from './Form';
 
 const API = 9000;
 
@@ -160,41 +161,15 @@ class App extends React.Component {
     return (
       <div className="App">
         <h1> Pantry </h1>
-        <form onSubmit={this.handleAddItem.bind(this)}>
-          <label>
-            Choose from item history:
-            <select onChange={this.handleItemInput.bind(this)}>
-              <option value="" disabled selected>Select item</option>
-              {this.state.itemsList.map(item => 
-                <option value={item.item_name} >{item.item_name}</option>
-              )}
-            </select>
-          </label>
-          <label>
-            Or input new item:
-            <input type='text' placeholder="item name" onChange={this.handleItemInput}/>
-          </label>
-          <br/>
-          <label for="expiration">
-            Expiration Date:
-            <input type='date' name="expiration" id="expiration" onChange={this.handleDateInput}/>
-          </label>
-          <label for="amount">
-            Amount:
-            <input type="number" name="amount" id="amount" onChange={this.handleAmountInput}/>
-          </label>
-          <label>
-            Choose category:
-            <select onChange={this.handleSelectCategoryInput.bind(this)}>
-              <option value="" disabled selected>Select category</option>
-              {this.state.categoriesList.map(category => 
-                <option value={JSON.stringify(category)} >{category.category_name}</option>
-              )}
-            </select>
-          </label>
-          <br/>
-          <button type="submit">Add Item</button>
-        </form>
+        <Form
+          categoriesList = {this.state.categoriesList}
+          itemsList = {this.state.itemsList}
+          handleItemInput = {this.handleItemInput}
+          handleDateInput = {this.handleDateInput}
+          handleAmountInput = {this.handleAmountInput}
+          handleSelectCategoryInput = {this.handleSelectCategoryInput}
+          handleAddItem = {this.handleAddItem}
+        />
         <h1> Pantry List </h1>
         <ul>
           {this.state.pantryList.map(item =>
