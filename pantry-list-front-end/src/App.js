@@ -115,13 +115,28 @@ class App extends React.Component {
   }
 
   handleAddToShoppingList = (event) => {
-    alert(`TODO: add ${event.target.item} to shopping list & remove from pantryList`)
+// POST item to shopping list, requires body to have "listID, itemID, itemCount"
+    const pantry_item_id = Number.parseInt(event.target.value)
+    const item = this.state.pantryList.filter(item => item.pantry_item_id === pantry_item_id)
+    const listID = 1 //TODO: FIGURE OUT HOW TO GET LIST ID
+    const itemID = item[0].item_id
+    const itemCount = item[0].amount
+    fetch(`http://localhost:${apiPORT}/shoppinglist/${listID}/item`, {
+      method: 'POST',
+      headers: { 'Content-Type':  'application/json' },
+      body: JSON.stringify({
+              listID: listID,
+              itemID: itemID,
+              itemCount: itemCount,
+            })
+      })  
+    this.handleRemoveItem(event)
   }
 
   render() {
     return (
       <div className="App">
-        <h1> Pantry List </h1>
+        <h1> Pantry </h1>
         <form onSubmit={this.handleAddItem.bind(this)}>
           <label>
             Choose from item history:
@@ -147,13 +162,14 @@ class App extends React.Component {
           <br/>
           <button type="submit">Add Item</button>
         </form>
+        <h1> Pantry List </h1>
         <ul>
           {this.state.pantryList.map(item =>
             <div>
               <li>
-                {item.item_name}   Expiration Date : {item.expiration}   Amount : {item.amount}
+                {item.item_name}   Expiration Date : {item.expiration.substring(0,10)}   Amount : {item.amount}
                 <button onClick={this.handleRemoveItem.bind(this)} value={item.pantry_item_id}>Remove</button>
-                <button onClick={this.handleAddToShoppingList.bind(this)} value={item}>Add to Shopping List</button>
+                <button onClick={this.handleAddToShoppingList.bind(this)} value={item.pantry_item_id}>Add to Shopping List</button>
               </li>
             </div>
           )}

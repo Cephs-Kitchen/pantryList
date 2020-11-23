@@ -3,7 +3,7 @@ const pool = require('./pool').getPool()
 //---------------------PANTRY---------------------
 
 const getSelectPantryList = (request, response) => {
-  let str = 'SELECT pantry_item_id, expiration, amount, item_name, category_name FROM tbl_pantrylist INNER JOIN tbl_items ON tbl_pantrylist.item_id = tbl_items.item_id INNER JOIN tbl_item_categories ON tbl_items.category_id = tbl_item_categories.category_id' 
+  let str = 'SELECT pantry_item_id, tbl_items.item_id, expiration, amount, item_name, category_name FROM tbl_pantrylist INNER JOIN tbl_items ON tbl_pantrylist.item_id = tbl_items.item_id INNER JOIN tbl_item_categories ON tbl_items.category_id = tbl_item_categories.category_id' 
   const sortBy = request.query.sortBy
   if (sortBy === 'expiration'){
     pool.query(    
