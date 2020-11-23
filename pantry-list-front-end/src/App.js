@@ -93,7 +93,15 @@ class App extends React.Component {
   }
 
   handleRemoveItem = (event) => {
-    this.setState({pantryList: this.state.pantryList.filter(item => item !== event.target.value)})
+    const pantry_item_id = Number.parseInt(event.target.value)
+    alert(pantry_item_id)
+    fetch(`http://localhost:${apiPORT}/pantryList/${pantry_item_id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type':  'application/json' },
+      })
+    .then(() =>
+      this.setState({pantryList: this.state.pantryList.filter(item => item.pantry_item_id !== pantry_item_id)})
+    )
   }
 
   handleAddToShoppingList = (event) => {
@@ -125,7 +133,7 @@ class App extends React.Component {
             <div>
               <li>
                 {item.item_name}   Expiration Date : {item.expiration}   Amount : {item.amount}
-                <button onClick={this.handleRemoveItem.bind(this)} value={item}>Remove</button>
+                <button onClick={this.handleRemoveItem.bind(this)} value={item.pantry_item_id}>Remove</button>
                 <button onClick={this.handleAddToShoppingList.bind(this)} value={item}>Add to Shopping List</button>
               </li>
             </div>
