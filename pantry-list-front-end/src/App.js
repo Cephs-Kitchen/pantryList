@@ -3,7 +3,7 @@ import React from 'react';
 import Form from './Form';
 import PantryList from './PantryList';
 
-const API = 8001;
+const API = 8000;
 
 class App extends React.Component {
   constructor(props){
