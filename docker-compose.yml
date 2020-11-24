@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  frontend:
+    build: pantry-list-front-end/
+    depends_on:
+      - 'database'
+    ports: 
+      - '3000:3000'
+
+  api:
+    build: pantry-list-api/
+    depends_on:
+      - 'database'
+    ports:
+      - '8000:8000'
+
+  database:
+    build: database/
+    ports:
+      - '5400:5432'
