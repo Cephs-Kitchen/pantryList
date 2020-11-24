@@ -1,3 +1,4 @@
+@import './Assets/color-scheme.css';
 *, html {
     padding: 0;
     margin: 0;
@@ -15,6 +16,7 @@ main {
     align-items: flex-start;
     height: 100%;
     width: 100%;
+    color: white;
 }
 
 section {
@@ -24,27 +26,35 @@ section {
     overflow: hidden;
 }
 
+/* Style the buttons */
+.btn {
+  border: none;
+  outline: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  background-color: var(--color-header-text);
+  color: white;
+}
+
+/* Style the active class (and buttons on mouse-over) */
+.notactive {
+  background-color: #f1f1f1;
+  color: black;
+  opacity: 0.5;
+}
+
+
 #item-container {
-    background-color: aqua;
 }
 
 #pantrylist-container {
-    background-color: dodgerblue;
 }
 
 #item-list-header {
-    height: 10vh;
+    height: 15vh;
 }
 
 #item-list-container, #pantry-list-container {
-    height: 90vh;
+    height: 85vh;
     overflow-y: auto;
-}
-
-.search-box {
-    text-align: center;
-}
-
-.button-span {
-    cursor: pointer;
 }

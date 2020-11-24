@@ -17,7 +17,7 @@ class App extends React.Component {
       itemsList: [],
       pantryList: [],
       sortBy: '',
-      flippedFlag: false,
+      descendingFlag: false,
     }
   }
 
@@ -44,7 +44,7 @@ class App extends React.Component {
     fetch(`http://localhost:${API}/pantryList?sortBy=${this.state.sortBy}`, { method: 'GET' })
     .then(response => response.json())
     .then(data => {
-      if(this.state.flippedFlag){
+      if(this.state.descendingFlag){
         this.setState({pantryList: data.slice().reverse()})
       } else {
         this.setState({pantryList: data})
@@ -166,18 +166,21 @@ class App extends React.Component {
   }
 
   handleSortBy = (event) => {
-    this.setState({sortBy: event.target.value, flippedFlag: false}, this.refreshPantryList)
+    this.setState({sortBy: event.target.value, descendingFlag: false}, this.refreshPantryList)
   }
 
-  handleFlipOrder = () => {
-    this.setState({flippedFlag: !this.state.flippedFlag}, this.refreshPantryList)
+  handleFlipOrder = (order) => {
+    if(order === "asc"){
+      this.setState({descendingFlag: false}, this.refreshPantryList)
+    } else if(order==="des"){
+      this.setState({descendingFlag: true}, this.refreshPantryList)
+    }
   }
 
   render() {
     return (
       <main id="app-internal-container">
-        <section id="item-container">
-          <h1> Pantry </h1>
+        <section id="item-container" class="container">
           <Form
             categoriesList = {this.state.categoriesList}
             itemsList = {this.state.itemsList}
@@ -189,9 +192,11 @@ class App extends React.Component {
           />
         </section>
         <section id="pantrylist-container">
-          <h1> Pantry List </h1>
           <PantryList
             pantryList = {this.state.pantryList}
+            descendingFlag = {this.state.descendingFlag}
+            handleOrderAscending = {() => this.handleFlipOrder("asc")}
+            handleOrderDescending = {() => this.handleFlipOrder("des")}
             handleSortBy = {this.handleSortBy}
             handleFlipOrder = {this.handleFlipOrder}
             handleChangeAmount = {this.handleChangeAmount}

@@ -19,46 +19,56 @@ class Form extends React.Component {
   }
 
   render() {
+    let item_history_btn_class = this.state.showItemHistory ? "btn" : "btn notactive";
+    let new_item_btn_class = this.state.showItemHistory ? "btn notactive" : "btn";
     return(
+      <div>
+        <br/><br/>
+        <h1> Add Item </h1>
+        <br/><br/>
         <form onSubmit={this.props.handleAddItem}>
-          <button onClick={this.handleShowItemHistory}>Choose from item history</button>
-          <button onClick={this.handleInputNewItem}>Input new item</button>
-          <br/><br/>
-          {this.state.showItemHistory ?
-            <label>
-              Choose from Item History:
-              <select onChange={this.props.handleItemInput}>
-                <option value="" disabled selected>Select item</option>
-                {this.props.itemsList.map(item => 
-                    <option value={item.item_name} >{item.item_name}</option>
-                )}
-              </select>
-            </label>
-            :
-            <label>
-              Input New Item:
-              <input type='text' placeholder="item name" onChange={this.props.handleItemInput}/>
-              <select onChange={this.props.handleSelectCategoryInput}>
-                  <option value="" disabled selected>Select category</option>
-                  {this.props.categoriesList.map(category => 
-                      <option value={JSON.stringify(category)} >{category.category_name}</option>
-                  )}
-              </select>
-            </label>
-          }
+            <button class={item_history_btn_class} onClick={this.handleShowItemHistory}>Choose from Item History</button>
+            <button class={new_item_btn_class} onClick={this.handleInputNewItem}>Input New Item</button>
             <br/><br/>
-            <label for="expiration">
-            Expiration Date:
-            <input type='date' name="expiration" id="expiration" onChange={this.props.handleDateInput}/>
-            </label>
-            <label for="amount">
-            Amount:
-            <input type="number" name="amount" id="amount" onChange={this.props.handleAmountInput} min="0"/>
-            </label>
+            {this.state.showItemHistory ?
+              <label>
+                Item History: {" "}
+                <select onChange={this.props.handleItemInput}>
+                  <option value="" disabled selected>Select item</option>
+                  {this.props.itemsList.map(item => 
+                      <option value={item.item_name} >{item.item_name}</option>
+                  )}
+                </select>
+              </label>
+              :
+              <label>
+                Item Name:{" "}
+                <input type='text' placeholder="Apples" onChange={this.props.handleItemInput}/>
+                <br/><br/>
+                Item Category:{" "}
+                <select onChange={this.props.handleSelectCategoryInput}>
+                    <option value="" disabled selected>Select category</option>
+                    {this.props.categoriesList.map(category => 
+                        <option value={JSON.stringify(category)} >{category.category_name}</option>
+                    )}
+                </select>
+              </label>
+            }
+              <br/><br/>
+              <label for="expiration">
+              Expiration Date:{" "}
+              <input type='date' name="expiration" id="expiration" onChange={this.props.handleDateInput}/>
+              </label>
+              <br/><br/>
+              <label for="amount">
+              Amount:{" "}
+              <input type="number" name="amount" id="amount" placeholder="0" onChange={this.props.handleAmountInput} min="0"/>
+              </label>
 
-            <br/>
-            <button type="submit">Add Item</button>
-        </form>
+              <br/><br/>
+              <button type="submit">Add Item</button>
+          </form>
+      </div>  
     )
   }
 }

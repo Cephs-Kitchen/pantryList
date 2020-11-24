@@ -1,0 +1,12 @@
+:root {
+    --color-header-text: #7d1009;       /* Headband Red */
+    --color-nav-link: #f97b0d;          /* Carrot Orange */
+    --color-nav-gradient: #442e21;      /* Wood Brown */
+    --color-app-background: #6d6050;    /* Stone Brown (partially transparent) */
+    --color-app-background-alt: #4c4a4f;/* Modified Stone Grey */
+    --color-button-fill: #ffebbc;       /* Lamp Light */
+    --color-button-text: #7d1009;       /* Headband Red */
+    --color-button-border: #feaf00;     /* Fire Orange */
+    --button-border-radius: 10px;
+    --button-border-width: 2px;
+}
