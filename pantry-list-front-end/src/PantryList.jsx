@@ -1,9 +1,6 @@
 import React from 'react';
 
 class PantryList extends React.Component {
-  constructor(props){
-    super(props)
-  }
 
   render(){
     let des_btn_class = this.props.descendingFlag ? "btn" : "btn notactive";
