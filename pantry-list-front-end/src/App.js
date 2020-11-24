@@ -3,7 +3,7 @@ import React from 'react';
 import Form from './Form';
 import PantryList from './PantryList';
 
-const API = 9000;
+const API = 8001;
 
 class App extends React.Component {
   constructor(props){
@@ -175,27 +175,31 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App">
-        <h1> Pantry </h1>
-        <Form
-          categoriesList = {this.state.categoriesList}
-          itemsList = {this.state.itemsList}
-          handleItemInput = {this.handleItemInput}
-          handleDateInput = {this.handleDateInput}
-          handleAmountInput = {this.handleAmountInput}
-          handleSelectCategoryInput = {this.handleSelectCategoryInput}
-          handleAddItem = {this.handleAddItem}
-        />
-        <h1> Pantry List </h1>
-        <PantryList
-          pantryList = {this.state.pantryList}
-          handleSortBy = {this.handleSortBy}
-          handleFlipOrder = {this.handleFlipOrder}
-          handleChangeAmount = {this.handleChangeAmount}
-          handleRemoveItem = {this.handleRemoveItem}
-          handleAddToShoppingList = {this.handleAddToShoppingList}
-        />
-      </div>
+      <main id="app-internal-container">
+        <section id="item-container">
+          <h1> Pantry </h1>
+          <Form
+            categoriesList = {this.state.categoriesList}
+            itemsList = {this.state.itemsList}
+            handleItemInput = {this.handleItemInput}
+            handleDateInput = {this.handleDateInput}
+            handleAmountInput = {this.handleAmountInput}
+            handleSelectCategoryInput = {this.handleSelectCategoryInput}
+            handleAddItem = {this.handleAddItem}
+          />
+        </section>
+        <section id="pantrylist-container">
+          <h1> Pantry List </h1>
+          <PantryList
+            pantryList = {this.state.pantryList}
+            handleSortBy = {this.handleSortBy}
+            handleFlipOrder = {this.handleFlipOrder}
+            handleChangeAmount = {this.handleChangeAmount}
+            handleRemoveItem = {this.handleRemoveItem}
+            handleAddToShoppingList = {this.handleAddToShoppingList}
+          />
+        </section>
+      </main>
     );
   }
 }
