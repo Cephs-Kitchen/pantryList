@@ -6,7 +6,7 @@ const pantryDB = require('./pantryQueries')
 const shoppingDB = require('./shoppingQueries')
 
 const app = express()
-const port = 9000
+const port = 8001
 
 app.use(bodyParser.json())
 app.use(

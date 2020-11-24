@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon ./index.js"
+    "start" : "node .",
+    "test": "npx nodemon"
   },
   "keywords": [],
   "author": "",
