@@ -29,6 +29,7 @@ section {
 
 /* Style the buttons */
 .btn {
+  font-size: calc(1vh + 1vw);
   border: none;
   outline: none;
   padding: 10px 16px;
@@ -36,7 +37,7 @@ section {
   background-color: var(--color-header-text);
   color: white;
   font-weight: bold;
-  font-size: calc(1vh + 1vw);
+  font-size: calc(0.8vh + 0.8vw);
 }
 
 /* Style the active class (and buttons on mouse-over) */
@@ -45,7 +46,23 @@ section {
   color: black;
   font-weight: bold;
   opacity: 0.3;
+  font-size: calc(0.8vh + 0.8vw);
 }
+
+#addBtn {
+  border-style: solid;
+  border-width: 3px;
+  border-color: var(--color-header-text);
+  outline: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  background-color: var(--color-button-fill);
+  color: var(--color-header-text);
+  font-weight: bold;
+  opacity: 0.8;
+  font-size: calc(0.8vh + 0.8vw);
+}
+
 
 #item-list-header {
     height: 15vh;
@@ -66,7 +83,7 @@ tr{
 }
 
 #name_col{
-  column-width: 120px;
+  column-width: 130px;
 }
 
 #expiration_col{
@@ -78,25 +95,13 @@ tr{
 }
 
 input[type=date]{
-    width: 140px;
+    width: 170px;
 } 
 
 input[type=number]{
     width: 40px;
 } 
 
-#addBtn {
-  border-style: solid;
-  border-width: 3px;
-  border-color: var(--color-header-text);
-  outline: none;
-  padding: 10px 16px;
-  cursor: pointer;
-  background-color: var(--color-button-fill);
-  color: var(--color-header-text);
-  font-weight: bold;
-  opacity: 0.8;
-}
 
 #required {
   border: 2px solid;
@@ -104,7 +109,7 @@ input[type=number]{
 }
 
 .input {
-  font-size: calc(1vh + 1vw);
+  font-size: calc(0.8vh + 0.8vw);
   opacity: 0.7;
 }
 
