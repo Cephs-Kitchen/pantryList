@@ -17,6 +17,7 @@ main {
     height: 100%;
     width: 100%;
     color: white;
+    font-size: calc(1vh + 1vw);
 }
 
 section {
@@ -35,6 +36,7 @@ section {
   background-color: var(--color-header-text);
   color: white;
   font-weight: bold;
+  font-size: calc(1vh + 1vw);
 }
 
 /* Style the active class (and buttons on mouse-over) */
@@ -102,6 +104,7 @@ input[type=number]{
 }
 
 .input {
+  font-size: calc(1vh + 1vw);
   opacity: 0.7;
 }
 
