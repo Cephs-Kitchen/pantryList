@@ -34,20 +34,15 @@ section {
   cursor: pointer;
   background-color: var(--color-header-text);
   color: white;
+  font-weight: bold;
 }
 
 /* Style the active class (and buttons on mouse-over) */
 .notactive {
-  background-color: #f1f1f1;
+  background-color: var(--color-button-fill);
   color: black;
-  opacity: 0.5;
-}
-
-
-#item-container {
-}
-
-#pantrylist-container {
+  font-weight: bold;
+  opacity: 0.3;
 }
 
 #item-list-header {
@@ -57,4 +52,59 @@ section {
 #item-list-container, #pantry-list-container {
     height: 85vh;
     overflow-y: auto;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+tr{
+  line-height: 25px ;
+}
+
+#name_col{
+  column-width: 120px;
+}
+
+#expiration_col{
+  column-width: 120px;
+}
+
+#button_column{
+  column-width: 40px;
+}
+
+input[type=date]{
+    width: 140px;
+} 
+
+input[type=number]{
+    width: 40px;
+} 
+
+#addBtn {
+  border-style: solid;
+  border-width: 3px;
+  border-color: var(--color-header-text);
+  outline: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  background-color: var(--color-button-fill);
+  color: var(--color-header-text);
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+#required {
+  border: 2px solid;
+  border-color: red;
+}
+
+.input {
+  opacity: 0.7;
+}
+
+.table-header {
+  color: white);
 }

@@ -33,7 +33,7 @@ class Form extends React.Component {
             {this.state.showItemHistory ?
               <label>
                 Item History: {" "}
-                <select onChange={this.props.handleItemInput}>
+                <select id="required" class="input" onChange={this.props.handleItemInput}>
                   <option value="" disabled selected>Select item</option>
                   {this.props.itemsList.map(item => 
                       <option value={item.item_name} >{item.item_name}</option>
@@ -43,10 +43,10 @@ class Form extends React.Component {
               :
               <label>
                 Item Name:{" "}
-                <input type='text' placeholder="Apples" onChange={this.props.handleItemInput}/>
+                <input type='text' placeholder="Apples" id="required" class="input" onChange={this.props.handleItemInput}/>
                 <br/><br/>
                 Item Category:{" "}
-                <select onChange={this.props.handleSelectCategoryInput}>
+                <select id="required" class="input" onChange={this.props.handleSelectCategoryInput}>
                     <option value="" disabled selected>Select category</option>
                     {this.props.categoriesList.map(category => 
                         <option value={JSON.stringify(category)} >{category.category_name}</option>
@@ -57,16 +57,16 @@ class Form extends React.Component {
               <br/><br/>
               <label for="expiration">
               Expiration Date:{" "}
-              <input type='date' name="expiration" id="expiration" onChange={this.props.handleDateInput}/>
+              <input type='date' class="input" id="expiration" onChange={this.props.handleDateInput}/>
               </label>
               <br/><br/>
               <label for="amount">
               Amount:{" "}
-              <input type="number" name="amount" id="amount" placeholder="0" onChange={this.props.handleAmountInput} min="0"/>
+                <input type="number" class="input" name="amount" id="amount" placeholder="1" onChange={this.props.handleAmountInput} min="1"/>
               </label>
 
               <br/><br/>
-              <button type="submit">Add Item</button>
+              <button type="submit" id="addBtn">Add Item</button>
           </form>
       </div>  
     )

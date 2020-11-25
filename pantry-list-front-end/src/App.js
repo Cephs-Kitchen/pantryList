@@ -97,44 +97,49 @@ class App extends React.Component {
     })
 
     promise
-    .then((item_id) =>
-      //Add item to the pantry list
-      fetch(`http://localhost:${API}/pantryList/`, {
-        method: 'POST',
-        headers: { 'Content-Type':  'application/json' },
-        body: JSON.stringify({
-                item_id: item_id,
-                expiration: this.state.dateInput,
-                amount: this.state.amountInput,
-              })
-        })    
-      .then(() => this.refreshPantryList())
+    .then((item_id) => 
+      {
+        //Add item to the pantry list
+        const amount = this.state.amountInput ? this.state.amountInput : 1
+        fetch(`http://localhost:${API}/pantryList/`, {
+          method: 'POST',
+          headers: { 'Content-Type':  'application/json' },
+          body: JSON.stringify({
+                  item_id: item_id,
+                  expiration: this.state.dateInput,
+                  amount: amount,
+                })
+          })    
+        .then(() => this.refreshPantryList())
+      }
     )
 
   }
 
-  handleRemoveItem = (event) => {
-    const params = JSON.parse(event.target.value)
+  handleRemoveItem = (args) => {    
+    const params = JSON.parse(args)
     const pantry_item_id = Number.parseInt(params.pantry_item_id)
     
     fetch(`http://localhost:${API}/pantryList/${pantry_item_id}`, {
       method: 'DELETE',
       headers: { 'Content-Type':  'application/json' },
     })
-    .then(() => this.refreshPantryList())
+    .then(() => this.refreshPantryList())  
   }
 
-  handleChangeAmount = (event) => {
-    const params = JSON.parse(event.target.value)
+  handleChangeAmount = (args) => {
+    const params = JSON.parse(args)
     const pantry_item_id = Number.parseInt(params.pantry_item_id)
     const action = params.action
     let amount = params.amount
     if(action === 'increase'){
       amount++
     } else if (action === 'decrease'){
+      if(amount === 0){
+        return
+      }
       amount--
     }
-
     fetch(`http://localhost:${API}/pantryList/`, {
       method: 'PUT',
       headers: { 'Content-Type':  'application/json' },
@@ -146,12 +151,15 @@ class App extends React.Component {
     .then(() => this.refreshPantryList())
   }
 
-  handleAddToShoppingList = (event) => {
+  handleAddToShoppingList = (args) => {
   // POST item to shopping list, requires body to have "listID, itemID, itemCount"
-    const params = JSON.parse(event.target.value)
+    const params = JSON.parse(args)
     const listID = 1 //TODO: FIGURE OUT HOW TO GET LIST ID
     const itemID = params.item_id
-    const itemCount = params.amount
+    let itemCount = params.amount
+    if(itemCount === 0){
+      itemCount = 1;
+    }
 
     fetch(`http://localhost:${API}/shoppinglist/${listID}/item`, {
       method: 'POST',
@@ -162,7 +170,7 @@ class App extends React.Component {
               itemCount: itemCount,
             })
     })  
-    this.handleRemoveItem(event)
+    this.handleRemoveItem(args)
   }
 
   handleSortBy = (event) => {
