@@ -18,4 +18,4 @@ services:
   database:
     build: database/
     ports:
-      - '5400:5432'
+      - '5432:5432'
